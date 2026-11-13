@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Numbers Daily</title>
+<style>
+:root{--bg:#f3f6fb;--card:#fff;--ink:#16233b;--mute:#66738a;--line:#dde4ee;--accent:#3d5afe;--on:#fff;--g:#4caf6a;--y:#f2c14e;--o:#f08a3c;--r:#d9534f;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1424;--card:#171f35;--ink:#eaf0fb;--mute:#93a0ba;--line:#2a3550;--accent:#7b93ff;--on:#0e1424;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1424;--card:#171f35;--ink:#eaf0fb;--mute:#93a0ba;--line:#2a3550;--accent:#7b93ff;--on:#0e1424;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Georgia,"Times New Roman",serif;min-height:100vh}
+main{max-width:480px;margin:0 auto;padding:20px 18px 40px}
+h1{font-size:40px;letter-spacing:-1px;margin:8px 0 22px;text-align:center}
+h1 span{color:var(--accent)}
+.sub{text-align:center;color:var(--mute);font:14px system-ui,sans-serif;margin:4px 0 20px}
+.dots{display:flex;gap:8px;justify-content:center;margin-bottom:18px}
+.dot{width:34px;height:8px;border-radius:4px;background:var(--line)}
+.dot.on{background:var(--ink)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
+.tier{font:600 12px system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.q{font-size:24px;line-height:1.3;margin:10px 0 18px}
+.digits{position:relative;display:flex;gap:8px;justify-content:center;margin:4px 0}
+.box{flex:1;max-width:56px;height:68px;border:2px solid var(--line);border-radius:12px;background:var(--bg);display:flex;align-items:center;justify-content:center;font:700 34px system-ui,sans-serif;transition:border-color .15s}
+.digits.on .box{border-color:var(--accent)}
+.digits input{position:absolute;inset:0;width:100%;height:100%;opacity:0;border:0;padding:0;margin:0;font-size:16px;cursor:text}
+.hint{text-align:center;color:var(--mute);font:13px system-ui,sans-serif;margin-top:10px}
+button{font:600 16px system-ui,sans-serif;border:0;border-radius:12px;padding:14px 18px;cursor:pointer;background:var(--accent);color:var(--on);width:100%;margin-top:12px}
+button.alt{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.err{color:var(--r);font:14px system-ui,sans-serif;min-height:18px;margin-top:8px;text-align:center}
+.reveal{text-align:center}
+.big{font:700 52px system-ui,sans-serif;margin:6px 0}
+.row{display:flex;justify-content:space-between;font:15px system-ui,sans-serif;color:var(--mute);margin:4px 0}
+.row b{color:var(--ink)}
+.bar{height:10px;border-radius:5px;background:var(--line);margin:14px 0 4px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent)}
+.squares{font-size:30px;letter-spacing:4px;text-align:center;margin:10px 0}
+.total{font:700 48px system-ui,sans-serif;text-align:center}
+.total small{font-size:20px;color:var(--mute)}
+.list{margin:14px 0 0;font:14px system-ui,sans-serif}
+.list div{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid var(--line)}
+.list span:first-child{color:var(--mute)}
+.note{text-align:center;color:var(--mute);font:13px system-ui,sans-serif;margin-top:16px}
+.fb{background:none;color:var(--mute);width:auto;display:block;margin:22px auto 0;padding:8px 12px;font:14px system-ui,sans-serif;text-decoration:underline}
+.ov{position:fixed;inset:0;background:rgba(10,15,30,.55);display:flex;align-items:center;justify-content:center;padding:max(18px,env(safe-area-inset-top)) 18px max(18px,env(safe-area-inset-bottom));z-index:20}
+.ov[hidden]{display:none}
+.md{width:100%;max-width:440px}
+textarea{width:100%;font:16px system-ui,sans-serif;padding:12px;border:2px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);resize:none}
+textarea:focus{outline:none;border-color:var(--accent)}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.pic{height:190px;border-radius:12px;overflow:hidden;margin:14px 0 0;background:var(--line)}
+.pic img{width:100%;height:100%;object-fit:cover;display:block}
+.blurb{font:15px/1.5 system-ui,sans-serif;text-align:left;margin:14px 0 4px}
+.credit{font:12px system-ui,sans-serif;color:var(--mute);text-align:left}
+.credit a{color:var(--mute)}
+.streak{width:max-content;margin:-10px auto 16px;padding:5px 12px;border-radius:999px;background:var(--card);border:1px solid var(--line);font:600 13px system-ui,sans-serif}
+.streak[hidden]{display:none}
+.stkl{text-align:center;font:600 15px system-ui,sans-serif;margin:4px 0 2px}
+.nm{width:100%;font:600 20px system-ui,sans-serif;padding:12px 14px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink);text-align:center;margin-top:4px}
+.nm:focus{outline:none;border-color:var(--accent)}
+.gbar{display:flex;gap:8px;margin:8px 0 12px}
+.gbar select,.gbar input{flex:1;min-width:0;font:600 15px system-ui,sans-serif;padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+.gbar button{width:auto;margin-top:0;padding:10px 14px;font-size:14px;white-space:nowrap}
+</style>
+</head>
+<body>
+<main>
+<h1>Numbers <span>Daily</span></h1>
+<div class="streak" id="stk" hidden></div>
+<div class="dots" id="dots"></div>
+<div id="view"></div>
+<button class="fb" id="fbBtn">Send feedback</button>
+<div class="ov" id="fbOv" hidden role="dialog" aria-modal="true" aria-labelledby="fbT">
+<div class="card md"><div class="tier" id="fbT">Feedback</div>
+<div class="q" style="font-size:20px;margin:8px 0 12px">What do you think of Numbers Daily?</div>
+<textarea id="fbTx" maxlength="250" rows="5" placeholder="Bugs, ideas, questions you loved or hated…"></textarea>
+<div class="row"><span id="fbMsg"></span><span id="fbCt">0 / 250</span></div>
+<input class="hp" id="fbHp" tabindex="-1" autocomplete="off" aria-hidden="true">
+<button id="fbSend">Send</button><button class="alt" id="fbX">Cancel</button></div></div>
+</main>
+<script>
+// =====================================================================
+// Numbers Daily. Questions, scoring, players and groups live in Supabase.
+// The page never contains answers: it asks the server, and the server
+// sends an answer back only after a guess is locked in.
+// =====================================================================
+
+// ---- Settings (paste your Supabase project values between the quotes) ----
+const SUPABASE_URL="https://panepsrnrhotxzckruvi.supabase.co";   // e.g. https://abcdefghijklmnop.supabase.co
+const SUPABASE_KEY="sb_publishable_WAZ7tzMf84tkGECSNN-16Q_KThBPZLo";   // the project's public "anon" / "publishable" key (safe to put in a web page)
+const SITE_URL="https://numbersdaily.netlify.app/"; // share-link fallback when the page runs somewhere unusual (preview, local file)
+const FEEDBACK_URL="https://script.google.com/macros/s/AKfycbzXbSPGiJEb_XQfAKFo3xvgS4UTau13zlUroCX9vT4oUXbpKykQX-4PharSXA796vJp/exec"; // feedback still goes to the Google Sheet script
+
+const TIERS=["1-digit answer","2-digit answer","3-digit answer","4-digit answer","5-digit answer"];
+const MAXES=[9,99,999,9999,99999]; // one more digit each round
+const EPOCH=Date.UTC(2026,10,5);
+function dayNum(){const d=new Date();return Math.floor((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-EPOCH)/864e5)+1}
+const DAY=dayNum();
+// Today's date (player's local time) as YYYY-MM-DD.
+const TODAY=(()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")})();
+const DATE_LABEL=new Date().toLocaleDateString("en-US",{month:"long",day:"numeric"}); // e.g. "November 5"
+const WT=[1,2,2,2,3],MAXPTS=100*WT.reduce((a,b)=>a+b,0);
+const sq=(s,i)=>{const f=s/(100*WT[i]);return f>=.9?"🟩":f>=.7?"🟨":f>=.4?"🟧":"🟥"};
+const fmt=n=>n.toLocaleString("en-US");
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const LS=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){}return null};
+const cleanName=n=>String(n||"").replace(/[^\p{L}\p{N} ._'-]/gu,"").replace(/\s+/g," ").trim().slice(0,12).trim();
+const cleanLabel=n=>String(n||"").replace(/[^\p{L}\p{N} ._'-]/gu,"").replace(/\s+/g," ").trim().slice(0,16).trim();
+const validG=g=>/^[a-z0-9]{6,12}$/.test(g||"");
+const newCode=()=>{const a=new Uint8Array(8);crypto.getRandomValues(a);return Array.from(a,b=>"abcdefghjkmnpqrstuvwxyz23456789"[b%31]).join("")};
+const uuid=()=>{const a=crypto.getRandomValues(new Uint8Array(16));a[6]=(a[6]&15)|64;a[8]=(a[8]&63)|128;const h=Array.from(a,b=>b.toString(16).padStart(2,"0")).join("");return h.slice(0,8)+"-"+h.slice(8,12)+"-"+h.slice(12,16)+"-"+h.slice(16,20)+"-"+h.slice(20)};
+
+// ---- Who am I: a random secret kept in this browser ----
+let TOKEN=LS("numbers-v1-token");
+if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(TOKEN||"")){TOKEN=uuid();LS("numbers-v1-token",TOKEN)}
+let NAME=cleanName(LS("numbers-v1-name")||"");
+
+// ---- Talking to the database ----
+const configured=()=>/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(SUPABASE_URL)&&SUPABASE_KEY.length>20;
+async function rpc(fn,args,ms){
+  const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),ms||12000);
+  const h={apikey:SUPABASE_KEY,"Content-Type":"application/json"};
+  if(/^eyJ/.test(SUPABASE_KEY))h.Authorization="Bearer "+SUPABASE_KEY;
+  try{
+    const r=await fetch(SUPABASE_URL.replace(/\/$/,"")+"/rest/v1/rpc/"+fn,{method:"POST",headers:h,body:JSON.stringify(args||{}),signal:ctl.signal});
+    const j=await r.json().catch(()=>null);
+    if(!r.ok)throw new Error((j&&j.message)||("Server error "+r.status));
+    return j;
+  }finally{clearTimeout(t)}
+}
+
+// ---- Game state ----
+let QS=[],results=[],step=0; // results[i]={g:guess,s:score,a:answer,ex:explanation,wk:wikipedia page}
+
+// ---- Daily streak: consecutive days with a finished game (stored in this browser) ----
+const SK="numbers-v1-streak";
+function loadStreak(){try{const x=JSON.parse(localStorage.getItem(SK));if(x&&typeof x.last==="number")return x}catch(e){}return{last:0,count:0,best:0}}
+function bumpStreak(){const x=loadStreak();
+  if(x.last!==DAY){x.count=(x.last===DAY-1)?x.count+1:1;x.last=DAY;x.best=Math.max(x.best||0,x.count);try{localStorage.setItem(SK,JSON.stringify(x))}catch(e){}}
+  return x}
+function showStreak(){const x=loadStreak(),n=x.last>=DAY-1?x.count:0,el=$("stk");
+  el.hidden=!n;if(n)el.textContent="🔥 "+n+"-day streak"}
+function dots(){showStreak();$("dots").innerHTML=[0,1,2,3,4].map(i=>'<div class="dot '+(i<=step&&step<5||step>=5?"on":"")+'"></div>').join("")}
+
+function showMsg(title,body,retry){
+  $("view").innerHTML='<div class="card" style="text-align:center"><div class="tier">'+esc(title)+'</div><div class="q" style="font-size:19px">'+esc(body)+'</div>'+(retry?'<button id="retry">Try again</button>':'')+'</div>';
+  if(retry)$("retry").onclick=boot;
+}
+
+// ---- Start-up: fetch today's questions and anything already answered ----
+async function boot(){
+  $("view").innerHTML='<div class="card"><div class="q" style="text-align:center;margin:18px 0">Loading today’s questions…</div></div>';
+  if(!configured()){showMsg("Not connected yet","This game isn’t connected to its database yet.");return}
+  try{
+    const [qs,mine]=await Promise.all([rpc("get_questions",{p_day:TODAY}),rpc("get_my_day",{p_token:TOKEN,p_day:TODAY})]);
+    const rows=(qs||[]).slice().sort((a,b)=>a.round-b.round);
+    if(rows.length!==5||rows.some((r,i)=>r.round!==i+1)){showMsg("No questions yet","Today’s questions aren’t ready. Please check back a little later.",true);return}
+    QS=rows.map(r=>r.question);
+    results=[];
+    for(const m of (mine||[]).slice().sort((a,b)=>a.round-b.round)){
+      if(m.round!==results.length+1)break;
+      results.push({g:m.guess,s:m.score,a:m.answer,ex:m.explanation,wk:m.wiki});
+    }
+    step=results.length;
+  }catch(e){showMsg("Can’t reach the game server","Check your connection and try again.",true);return}
+  start();
+}
+function start(){
+  if(NAME)rpc("register_player",{p_token:TOKEN,p_name:NAME}).catch(()=>{});
+  if(validG(urlG)&&NAME)rpc("join_group",{p_token:TOKEN,p_code:urlG,p_label:""}).catch(()=>{});
+  if(validG(urlG)&&!NAME&&step<5)gate();else step>=5?done():ask();
+}
+
+function ask(){
+  dots();
+  const n=step+1,q=QS[step],max=MAXES[step];
+  $("view").innerHTML='<div class="card"><div class="tier">Question '+(step+1)+' of 5 · '+TIERS[step]+'</div><div class="q">'+esc(q)+'</div><div class="digits" id="dg">'+'<div class="box"></div>'.repeat(n)+'<input id="g" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="'+n+'" autocomplete="off" aria-label="Your guess, a whole number up to '+n+' digit'+(n>1?'s':'')+'"></div><div class="hint">Whole numbers only · '+n+' digit'+(n>1?'s':'')+' (1 to '+fmt(max)+')</div><div class="err" id="err"></div><button id="go">Lock it in</button></div>';
+  const g=$("g"),dg=$("dg"),boxes=dg.querySelectorAll(".box");
+  // Digits fill from the right, like a calculator: typing 7 in a 2-box round shows "_ 7".
+  const draw=()=>{const t=g.value.padStart(n," ");boxes.forEach((bx,i)=>bx.textContent=t[i].trim())};
+  g.oninput=()=>{g.value=g.value.replace(/\D/g,"").slice(0,n);$("err").textContent="";draw()};
+  g.onfocus=()=>dg.classList.add("on");g.onblur=()=>dg.classList.remove("on");
+  g.focus();
+  let busy=false;
+  const go=async()=>{
+    if(busy)return;
+    const v=parseInt(g.value||"0",10);
+    if(!(v>=1&&v<=max)){$("err").textContent="Enter a whole number from 1 to "+fmt(max)+".";return}
+    busy=true;const btn=$("go");btn.disabled=true;btn.textContent="Locking in…";
+    try{
+      // The server scores the guess and only now reveals the answer.
+      const r=await rpc("submit_guess",{p_token:TOKEN,p_day:TODAY,p_round:step+1,p_guess:v});
+      results.push({g:r.guess,s:r.score,a:r.answer,ex:r.explanation,wk:r.wiki});
+      reveal(results.length-1);
+    }catch(e){
+      busy=false;btn.disabled=false;btn.textContent="Lock it in";
+      $("err").textContent="Couldn’t reach the server. Check your connection and try again.";
+    }
+  };
+  $("go").onclick=go;g.onkeydown=e=>{if(e.key==="Enter")go()};
+}
+function reveal(i){
+  const r=results[i],last=i>=4;
+  $("view").innerHTML='<div class="card reveal"><div class="tier">Answer</div><div class="big">'+fmt(r.a)+'</div><div class="row"><span>You guessed</span><b>'+fmt(r.g)+'</b></div><div class="bar"><i style="width:'+(r.s/WT[i])+'%"></i></div><div class="row"><span>Score</span><b>'+r.s+' / '+(100*WT[i])+' '+sq(r.s,i)+'</b></div><div class="pic" id="pic" hidden></div><p class="blurb">'+esc(r.ex)+'</p><div class="credit" id="cr"></div><button id="nx">'+(last?"See results":"Next question")+'</button><div class="hint">Press any key or tap to continue</div></div>';
+  // Photo: lead image of the matching Wikipedia article, loaded when the answer is shown.
+  const pic=$("pic"),cr=$("cr");
+  if(r.wk)fetch("https://en.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(r.wk).replace(/'/g,"%27")).then(x=>x.ok?x.json():null).then(j=>{
+    if(!j||!j.thumbnail||!pic.isConnected)return;
+    const im=new Image();im.alt=j.title||"";
+    im.onload=()=>{if(!pic.isConnected)return;pic.appendChild(im);pic.hidden=false;
+      const link=(j.content_urls&&j.content_urls.desktop&&j.content_urls.desktop.page)||"https://en.wikipedia.org";
+      cr.innerHTML='Photo: <a href="'+esc(link)+'" target="_blank" rel="noopener">Wikipedia</a>'};
+    im.src=j.thumbnail.source;
+  }).catch(()=>{});
+  // Advance on any key or tap (ignored for the first moment so the lock-in press doesn't skip the answer).
+  const t0=Date.now(),SKIP=["Shift","Control","Alt","Meta","CapsLock","Tab"];
+  const off=()=>{document.removeEventListener("keydown",key);document.removeEventListener("click",tap)};
+  const go=()=>{if(Date.now()-t0<450)return;off();step++;last?done():ask()};
+  const key=e=>{if(e.metaKey||e.ctrlKey||e.altKey||SKIP.includes(e.key)||!$("fbOv").hidden)return;e.preventDefault();go()};
+  const tap=e=>{if(e.target.closest&&e.target.closest("a,#fbBtn,#fbOv"))return;go()};
+  document.addEventListener("keydown",key);document.addEventListener("click",tap);
+}
+
+// ---- Groups and the leaderboard ----
+const urlG=(new URLSearchParams(location.search).get("g")||"").toLowerCase();
+let GROUP=validG(urlG)?urlG:(LS("numbers-v1-group")||"");
+if(!validG(GROUP))GROUP="";
+if(validG(urlG))LS("numbers-v1-group",urlG);
+const loadGroups=()=>{try{const a=JSON.parse(LS("numbers-v1-groups"));if(Array.isArray(a))return a.filter(x=>x&&validG(x.c))}catch(e){}return[]};
+function ensureGroup(c,l){const a=loadGroups();if(!a.some(x=>x.c===c)){a.push({c,l:cleanLabel(l)||"Group "+(a.length+1),n:!!cleanLabel(l)});LS("numbers-v1-groups",JSON.stringify(a))}}
+if(GROUP)ensureGroup(GROUP);
+let BOARD=null,lastFetch=0;
+// Share links point at the site the page is really running on (GitHub Pages or Netlify).
+// Anywhere else (a preview window, a local file) they fall back to SITE_URL.
+function siteBase(loc){
+  if(/^https?:$/.test(loc.protocol)&&/(\.github\.io|\.netlify\.app)$/.test(loc.hostname))return loc.origin+loc.pathname.replace(/[^\/]*$/,"");
+  return SITE_URL||loc.href.split(/[?#]/)[0];
+}
+const baseUrl=()=>siteBase(location);
+const shareLink=()=>baseUrl()+"?g="+GROUP;
+async function getBoard(){
+  if(!configured()||!GROUP||!NAME)return null;
+  try{const j=await rpc("get_board",{p_token:TOKEN,p_code:GROUP,p_day:TODAY},10000);return j&&Array.isArray(j.members)?j:null}
+  catch(e){return null}
+}
+const myEntry=()=>({name:NAME,squares:results.map((r,i)=>sq(r.s,i)).join(""),total:results.reduce((a,r)=>a+r.s,0),is_me:true});
+const sortBoard=l=>l.slice().sort((a,b)=>(b.total==null?-1:b.total)-(a.total==null?-1:a.total)||a.name.localeCompare(b.name));
+function boardText(list){
+  const played=list.filter(m=>m.total!=null),idle=list.filter(m=>m.total==null);
+  const short=t=>[...t].length>9?[...t].slice(0,8).join("")+"…":t;
+  const lines=played.map(m=>[...m.squares].join("\u2009")+" "+m.total+" "+short(m.name));
+  if(idle.length)lines.push("😢 No score yet: "+idle.map(m=>m.name).join(", "));
+  let tail="See how you stack up.",gap="\n";
+  if(list.length>1&&played.length===list.length){
+    const w=played.filter(m=>m.total===played[0].total);
+    tail=w.length===1?w[0].name+" Wins!":"It’s a tie!";gap="\n\n";
+  }
+  return DATE_LABEL+(namedLabel()?" · "+namedLabel():"")+"\n"+lines.join("\n")+gap+tail+" Play Numbers:\n"+shareLink();
+}
+function getShareText(){return(NAME&&GROUP&&configured())?boardText(sortBoard(BOARD||[myEntry()])):shareText()}
+function setLabel(c,l){l=cleanLabel(l);if(!l)return;const a=loadGroups(),x=a.find(y=>y.c===c);if(x&&(x.l!==l||!x.n)){x.l=l;x.n=true;LS("numbers-v1-groups",JSON.stringify(a))}}
+const namedLabel=()=>{const x=loadGroups().find(y=>y.c===GROUP);return x&&x.n?x.l:""};
+const curLabel=()=>{const x=loadGroups().find(y=>y.c===GROUP);return x?x.l:"Group"};
+function updateShareBtn(){
+  const b=$("sh"),b2=$("sh2");if(!b)return;
+  const g=!!(NAME&&GROUP&&configured());
+  b.textContent=g?"Share to "+curLabel():"Challenge a friend";
+  if(b2)b2.hidden=!g;
+}
+async function doShare(txt){
+  const e=$("err");
+  try{if(navigator.share){await navigator.share({text:txt});return}}catch(x){}
+  try{await navigator.clipboard.writeText(txt);e.textContent="Copied! Paste it in a chat.";return}catch(x){}
+  const ta=document.createElement("textarea");ta.value=txt;document.body.appendChild(ta);ta.select();
+  try{document.execCommand("copy");e.textContent="Copied! Paste it in a chat."}catch(x){e.textContent="Couldn’t copy automatically."}
+  ta.remove();
+}
+function renameForm(){
+  const bar=$("gbar");
+  bar.innerHTML='<input id="gname" maxlength="16" aria-label="Group name" value="'+esc(curLabel())+'"><button id="gmk">Save</button>';
+  const go=()=>{const l=cleanLabel($("gname").value);if(l){setLabel(GROUP,l);rpc("rename_group",{p_token:TOKEN,p_code:GROUP,p_label:l}).catch(()=>{})}renderLB();updateShareBtn()};
+  $("gmk").onclick=go;$("gname").onkeydown=e=>{if(e.key==="Enter")go()};$("gname").focus();$("gname").select();
+}
+function changeNameForm(){
+  const el=$("nbar");if(!el)return;
+  el.innerHTML='<div class="gbar"><input id="nname" maxlength="12" aria-label="Your name" value="'+esc(NAME)+'"><button id="nsave">Save</button></div>';
+  const go=async()=>{
+    const n=cleanName($("nname").value);
+    if(!n||n===NAME){renderLB();return}
+    el.innerHTML='<div class="hint">Updating your name…</div>';
+    // One name per player, so the change shows up in every group at once.
+    try{await rpc("register_player",{p_token:TOKEN,p_name:n});NAME=n;LS("numbers-v1-name",n)}
+    catch(e){el.innerHTML='<div class="hint">Couldn’t save the new name. Try again.</div>';return}
+    BOARD=null;await syncGroup();
+  };
+  $("nsave").onclick=go;$("nname").onkeydown=e=>{if(e.key==="Enter")go()};$("nname").focus();$("nname").select();
+}
+function groupBar(){
+  return '<div class="gbar" id="gbar"><select id="gsel" aria-label="Group">'+loadGroups().map(x=>'<option value="'+x.c+'"'+(x.c===GROUP?' selected':'')+'>'+esc(x.l)+'</option>').join("")+'</select><button class="alt" id="gren" aria-label="Rename group" title="Rename group">✎</button><button class="alt" id="gnew">+ New</button></div>';
+}
+function switchGroup(c){if(!validG(c))return;GROUP=c;LS("numbers-v1-group",c);BOARD=null;syncGroup()}
+function newGroupForm(){
+  const bar=$("gbar");
+  bar.innerHTML='<input id="gname" maxlength="16" placeholder="Group name, e.g. Family" aria-label="Group name"><button id="gmk">Create</button>';
+  const go=()=>{const c=newCode(),l=cleanLabel($("gname").value);ensureGroup(c,l);switchGroup(c)};
+  $("gmk").onclick=go;$("gname").onkeydown=e=>{if(e.key==="Enter")go()};$("gname").focus();
+}
+function renderLB(){
+  const box=$("lb");if(!box)return;
+  if(!NAME||!configured()){box.innerHTML="";updateShareBtn();return}
+  let html='<div class="tier" style="margin-top:18px">Group leaderboard</div>'+groupBar();
+  if(!BOARD){html+='<div class="hint">Loading your group…</div>'}
+  else{
+    const list=sortBoard(BOARD);
+    html+='<div class="list">'+list.map((m,i)=>'<div><span>'+(m.total==null?'–':(i+1))+' · '+esc(m.name)+(m.is_me?' (you)':'')+'</span><b>'+(m.total==null?'No score yet':esc(m.squares)+' '+m.total)+'</b></div>').join("")+'</div><button class="alt" id="rf">Refresh</button><div id="nbar" class="hint" style="margin-top:10px">Playing as <b>'+esc(NAME)+'</b> · <button class="fb" id="chn" style="display:inline;margin:0;padding:0;font-size:13px">Change name</button></div>';
+  }
+  box.innerHTML=html;
+  $("gsel").onchange=e=>switchGroup(e.target.value);$("gnew").onclick=newGroupForm;$("gren").onclick=renameForm;updateShareBtn();
+  if($("rf"))$("rf").onclick=refreshLB;if($("chn"))$("chn").onclick=changeNameForm;
+}
+async function refreshLB(){
+  const j=await getBoard();lastFetch=Date.now();
+  if(j){BOARD=j.members;if(j.label)setLabel(GROUP,j.label)}else if(!BOARD){BOARD=[myEntry()]}
+  renderLB();
+}
+async function syncGroup(){
+  if(!GROUP){GROUP=newCode();LS("numbers-v1-group",GROUP);ensureGroup(GROUP)}
+  renderLB();
+  // Make sure the server knows this player and group (creates a new group with its name if needed).
+  try{await rpc("register_player",{p_token:TOKEN,p_name:NAME});await rpc("join_group",{p_token:TOKEN,p_code:GROUP,p_label:namedLabel()})}catch(e){}
+  await refreshLB();
+}
+function startGroup(){
+  if(!configured())return;
+  if(NAME){syncGroup();return}
+  const g=$("grp");
+  g.innerHTML='<div class="gate"><div class="tier" style="margin-top:18px">Group leaderboard</div><div class="hint" style="margin:6px 0 10px">Add your name to compare scores with friends.</div><input class="nm" id="nm" maxlength="12" placeholder="Your name" autocomplete="nickname" aria-label="Your name"><button id="nmGo">Join leaderboard</button></div>';
+  const go=()=>{const n=cleanName($("nm").value);if(!n)return;NAME=n;LS("numbers-v1-name",n);g.innerHTML="";syncGroup()};
+  $("nmGo").onclick=go;$("nm").onkeydown=e=>{if(e.key==="Enter")go()};
+}
+function gate(){
+  dots();
+  $("view").innerHTML='<div class="card"><div class="tier">You’re invited</div><div class="q">Enter your name to join this group’s leaderboard.</div><input class="nm" id="nm" maxlength="12" placeholder="Your name" autocomplete="nickname" aria-label="Your name"><div class="err" id="err"></div><button id="nmGo">Join &amp; play</button></div>';
+  let busy=false;
+  const go=async()=>{
+    const n=cleanName($("nm").value);if(!n){$("err").textContent="Type a name to join.";return}
+    if(busy)return;busy=true;$("nmGo").disabled=true;
+    try{await rpc("register_player",{p_token:TOKEN,p_name:n});await rpc("join_group",{p_token:TOKEN,p_code:urlG,p_label:""})}
+    catch(e){busy=false;$("nmGo").disabled=false;$("err").textContent="Couldn’t join right now. Check your connection and try again.";return}
+    NAME=n;LS("numbers-v1-name",n);ask();
+  };
+  $("nmGo").onclick=go;$("nm").onkeydown=e=>{if(e.key==="Enter")go()};$("nm").focus();
+}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&step>=5&&NAME&&GROUP&&Date.now()-lastFetch>20000)refreshLB()});
+
+function shareText(){
+  const t=results.reduce((a,r)=>a+r.s,0);
+  return DATE_LABEL+"\n"+results.map((r,i)=>sq(r.s,i)).join("")+"  "+t+"/"+MAXPTS+"\nThink you can beat me? Play Numbers:\n"+baseUrl();
+}
+function done(){
+  const st=bumpStreak();dots();step=5;
+  const t=results.reduce((a,r)=>a+r.s,0);
+  const rows=results.map((r,i)=>'<div><span>Q'+(i+1)+' · '+fmt(r.g)+' vs '+fmt(r.a)+'</span><b>'+sq(r.s,i)+' '+r.s+'</b></div>').join("");
+  $("view").innerHTML='<div class="card"><div class="tier" style="text-align:center">'+DATE_LABEL+'</div><div class="squares">'+results.map((r,i)=>sq(r.s,i)).join("")+'</div><div class="total">'+t+'<small> / '+MAXPTS+'</small></div><div class="stkl">🔥 '+st.count+'-day streak · Best '+st.best+'</div><div class="list">'+rows+'</div><div id="grp"></div><div id="lb"></div><button id="sh">Challenge a friend</button><button class="alt" id="sh2" hidden>Share with others</button><div class="err" id="err" style="color:var(--mute)"></div></div><div class="note">New questions every day.</div>';
+  $("sh").onclick=()=>doShare(getShareText());
+  $("sh2").onclick=()=>doShare(shareText());
+  updateShareBtn();
+  startGroup();
+}
+
+boot();
+
+// ---- Feedback (still goes to the Google Sheet script) ----
+(()=>{
+  const ov=$("fbOv"),tx=$("fbTx"),ct=$("fbCt"),msg=$("fbMsg"),send=$("fbSend");
+  let last=0;
+  const open=()=>{ov.hidden=false;msg.textContent="";send.disabled=false;tx.focus()};
+  const close=()=>{ov.hidden=true};
+  $("fbBtn").onclick=open;$("fbX").onclick=close;
+  ov.onclick=e=>{if(e.target===ov)close()};
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!ov.hidden)close()});
+  tx.oninput=()=>{ct.textContent=tx.value.length+" / 250"};
+  send.onclick=async()=>{
+    const text=tx.value.trim();
+    if(!text){msg.textContent="Type something first.";return}
+    if(!FEEDBACK_URL){msg.textContent="Feedback isn’t connected yet.";return}
+    if(Date.now()-last<30000){msg.textContent="Please wait a moment before sending again.";return}
+    send.disabled=true;msg.textContent="Sending…";
+    try{
+      const body=new URLSearchParams({message:text.slice(0,250),day:String(DAY),website:$("fbHp").value});
+      await fetch(FEEDBACK_URL,{method:"POST",mode:"no-cors",body});
+      last=Date.now();tx.value="";ct.textContent="0 / 250";msg.textContent="Thanks! Your feedback was sent.";
+      setTimeout(close,1400);
+    }catch(e){msg.textContent="Couldn’t send. Please try again.";send.disabled=false}
+  };
+})();
+</script>
+</body>
+</html>
